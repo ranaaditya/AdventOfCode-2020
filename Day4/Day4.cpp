@@ -9,6 +9,8 @@
 #include<sstream>
 #include<string>
 #include<map>
+#include<set>
+#include<stdio.h>
 
 using namespace std;
 
@@ -19,7 +21,7 @@ bool readInputFile(std::string fileName, std::function<void (const std::string &
 
     if(!in)
     {
-        std::cerr << "Cannot open the File : "<<fileName<<std::endl;
+        std::cerr << "Cannot open the File : "<< fileName << std::endl;
         return false;
     }
 
@@ -53,8 +55,20 @@ void flush_code(code c) {
 
 vector<code>  parse_file(vector<string> v, map<string, int> mp) {
     vector<code> vc(v.size());
+    int fact = 0;
     int last_index = 0;
     int vc_index = 0;
+    
+    // set for hcl (hair colors)
+    set<string> s;
+    s.insert("amb");
+    s.insert("blu");
+    s.insert("brn");
+    s.insert("gry");
+    s.insert("grn");
+    s.insert("hzl");
+    s.insert("oth");
+    
     //cout << "inside parse()";
 
     for(int i = 0; i < v.size(); i++)
@@ -73,16 +87,56 @@ vector<code>  parse_file(vector<string> v, map<string, int> mp) {
             while(ss >> word)
             {
                 //cout << word << "\n";
-                //cout << word.substr(0,3) << "\n";
+                
                 switch(mp[word.substr(0,3)])
                 {
-                    case 1 : {vc[vc_index].byr = true; break;}
-                    case 2:  {vc[vc_index].iyr = true; break;}
-                    case 3:  {vc[vc_index].eyr = true; break;}
-                    case 4:  {vc[vc_index].hgt = true; break;}
-                    case 5:  {vc[vc_index].hcl = true; break;}
-                    case 6:  {vc[vc_index].ecl = true; break;}
-                    case 7:  {vc[vc_index].pid = true; break;}
+                    case 1 : {  fact = stoi(word.substr(5,10));
+                                vc[vc_index].byr = (fact >= 1920 && fact <= 2002);
+                                break;
+                                }
+                                
+                    case 2:  {  fact = stoi(word.substr(5,10));
+                                vc[vc_index].iyr = (fact >= 2010 && fact <= 2020);
+                                break;
+                                }
+
+                    case 3:  {  fact = stoi(word.substr(5,10));
+                                vc[vc_index].eyr = (fact >= 2020 && fact <= 2030);
+                                break;
+                                }
+
+                    case 4:  {  if(word[word.size()-1] == 'm')
+                                {
+                                    // cm
+                                fact = stoi(word.substr(5,word.size()-2));
+                                vc[vc_index].hgt = (fact >= 150 && fact <= 193);
+                                }
+                                else
+                                {
+                                    fact = stoi(word.substr(5,word.size()-2));
+                                    vc[vc_index].hgt = (fact >= 59 && fact <= 76);
+                                }
+                                break;
+                                }
+
+                    case 5:  {
+                               string w = word.substr(5,9);
+                               vc[vc_index].hcl = (s.find(w) != s.end());
+                               break;
+                               }
+
+                    case 6:  {
+                               string w = word.substr(5,9);
+                               vc[vc_index].ecl = (s.find(w) != s.end());
+                               break;
+                               }
+
+                    case 7:  {
+                               fact = stoi(word.substr(5,word.size()-1));
+                               vc[vc_index].hgt = (fact <= 999999999);
+                               break;
+                               }
+
                     case 8:  {vc[vc_index].cid = true; break;}
                     default : break;
                 }

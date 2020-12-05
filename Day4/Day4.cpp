@@ -52,26 +52,29 @@ void flush_code(code c) {
 }
 
 vector<code>  parse_file(vector<string> v, map<string, int> mp) {
-    vector<code> vc;
+    vector<code> vc(v.size());
     int last_index = 0;
     int vc_index = 0;
-    cout << "inside parse()";
+    //cout << "inside parse()";
 
     for(int i = 0; i < v.size(); i++)
     {
-        cout << vc_index;
+        //cout << vc_index;
         vc[vc_index] = code();
         last_index = i;
 
-        while(!v[i].empty() && i != v.size()-1)
+        //cout << v[i] << "\n";
+
+        while(!v[i].empty() && i < v.size())
         {
             stringstream ss;
             string word;
             ss.str(v[i]);
             while(ss >> word)
             {
-                cout << word << "\t";
-                switch(mp[word.substr(0,2)])
+                //cout << word << "\n";
+                //cout << word.substr(0,3) << "\n";
+                switch(mp[word.substr(0,3)])
                 {
                     case 1 : {vc[vc_index].byr = true; break;}
                     case 2:  {vc[vc_index].iyr = true; break;}
@@ -86,13 +89,17 @@ vector<code>  parse_file(vector<string> v, map<string, int> mp) {
             }
             i++;
         }
+        
         vc_index++;
     }
+
     return vc;
 }
+
+
 bool has(code x)
 {
-    return x.byr and x.ecl and x.eyr and  x.hcl and x.hgt and x.iyr and x.pid;
+    return x.byr && x.ecl && x.eyr &&x.hcl && x.hgt && x.iyr && x.pid;
 }
 
 int check(vector<code> vc)
@@ -101,8 +108,10 @@ int check(vector<code> vc)
 
     for(code x : vc)
     {
-        if(has(x)) ans++;
+        if(has(x)) 
+        ans++;
     }
+
     return ans;
 }
 
@@ -117,7 +126,7 @@ int main() {
     code_mp["pid"] = 7;
     code_mp["cid"] = 8;
 
-    std::vector<std::string> vecOfStr;
+    std::vector<string> vecOfStr;
     std::vector<code> vc;
     
     bool res = readInputFile("input.txt", [&](const std::string & str){vecOfStr.push_back(str);});
